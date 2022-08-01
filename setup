@@ -1,0 +1,73 @@
+#! /bin/bash
+
+function repeat(){
+	for i in {1..60}; do echo -n "$1"; done
+}
+function PrintPercentageAndText() {
+    clear
+    repeat '='
+    echo
+    echo
+    for (( i = 0; i < $(( $1 / 10 )); i++ )); do
+        echo -n '#'
+    done
+    for (( i = 0; i < $(((120 - $1) / 10 )); i++ )); do
+        echo -n ' '
+    done
+    echo -ne "($1%)\n$2"
+    echo
+    echo
+    repeat '='
+    echo
+    echo
+}
+
+if [[ $(/usr/bin/id -u) -ne 0 ]]
+    then
+        echo "Please run as root"
+        exit
+fi
+
+read -sp "Enter Installation Token: " InstallationToken
+clear
+
+if [ -z "$(which node)" ]
+    then
+        PrintPercentageAndText 0 "Installing Node.js..."
+        sudo apt-get install -y nodejs &> /dev/null
+    else
+        PrintPercentageAndText 0 "Node.js already installed"
+fi
+sleep 0.25
+
+if [ -z "$(which npm)" ]
+    then
+        PrintPercentageAndText 30 "Installing NPM (Node Package Manager)..."
+        sudo apt-get install -y npm &> /dev/null
+    else
+        PrintPercentageAndText 30 "NPM (Node Package Manager) is already installed."
+fi
+sleep 0.25
+
+PrintPercentageAndText 40 "Installing Latest Nodejs"
+npm i -g n &> /dev/null
+n latest &>/dev/null
+
+if [ -z "$(which pm2)" ]
+    then
+        PrintPercentageAndText 50 "Installing PM2..."
+        npm install pm2 -g &> /dev/null
+    else
+        PrintPercentageAndText 50 "PM2 is already installed."
+fi
+sleep 0.25
+
+PrintPercentageAndText 70 "Installing Program..."
+git clone "https://$InstallationToken@github.com/BitSoyuz/TIS.git" &> /dev/null
+
+
+PrintPercentageAndText 100 "Installation Complete."
+sleep 0.5
+
+# git clone https://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@github.com/BitSoyuz/TIS.git
+# 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
